@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Verify
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      CC: ccache gcc
+      CXX: ccache g++
+      CCACHE_DIR: $RUNNER_TEMP/ccache
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Restore ccache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CCACHE_DIR }}
+          key: ${{ runner.os }}-ccache-${{ hashFiles('**/meson.build','src/**') }}
+          restore-keys: |
+            ${{ runner.os }}-ccache-
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential meson ninja-build pkg-config libpam0g-dev libkeyutils-dev ccache
+
+      - name: Configure build
+        run: |
+          meson setup build
+
+      - name: Build
+        run: |
+          meson compile -C build
+
+      - name: Test
+        run: |
+          meson test -C build --verbose
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: module
+          path: build/**/*.so
+          if-no-files-found: error
