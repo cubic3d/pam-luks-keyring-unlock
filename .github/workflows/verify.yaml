@@ -13,7 +13,7 @@ jobs:
     env:
       CC: ccache gcc
       CXX: ccache g++
-      CCACHE_DIR: $RUNNER_TEMP/ccache
+      CCACHE_DIR: /tmp/ccache
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
