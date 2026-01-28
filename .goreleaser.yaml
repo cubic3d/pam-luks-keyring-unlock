@@ -15,7 +15,7 @@ release:
 
 changelog:
   use: github
-  format: '[`{{ .SHA | printf "%.7s" }}`]({{ .GitURL }}/commit/{{ .SHA }}) {{ .Message }} ({{ with .AuthorUsername }}@{{ . }}{{ else }}{{ .AuthorName }} <{{ .AuthorEmail }}>{{ end }})'
+  format: '[`{{ .SHA | printf "%.7s" }}`]({{ .GitURL }}/commit/{{ .SHA }}) {{ .Message }} ({{ with .Author.Username }}@{{ . }}{{ else }}{{ .Author.Name }} <{{ .Author.Email }}>{{ end }})'
   sort: asc
   filters:
     include:
