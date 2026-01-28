@@ -46,6 +46,26 @@ This module retrieves your LUKS passphrase from the kernel keyring, where it's c
     ninja -C build install
     ```
 
+### AUR Package (Arch Linux)
+
+An Arch User Repository (AUR) package named `pam-luks-keyring-unlock` is available for easy installation on Arch Linux and its derivatives.
+
+Install with an AUR helper (e.g., `yay`):
+
+```bash
+yay -S pam-luks-keyring-unlock
+```
+
+Or, if you prefer to build manually:
+
+```bash
+git clone https://aur.archlinux.org/pam-luks-keyring-unlock.git
+cd pam-luks-keyring-unlock
+makepkg -si
+```
+
+The AUR package installs the `pam_luks_keyring_unlock.so` module to `/usr/lib/security/`.
+
 ## Configuration
 
 To enable the module, you need to add it to your PAM configuration. The exact file depends on your login manager (e.g., greetd).
@@ -55,7 +75,7 @@ To enable the module, you need to add it to your PAM configuration. The exact fi
 Add the following line to the appropriate file in `/etc/pam.d/` (e.g., `/etc/pam.d/greetd`):
 
 ```text
-session    optional     /usr/local/lib/security/pam_luks_keyring_unlock.so
+session    optional     pam_luks_keyring_unlock.so
 ```
 
 This line should be placed **before** the lines that unlock the keyrings, for example:
@@ -70,12 +90,14 @@ auth       required     pam_securetty.so
 auth       requisite    pam_nologin.so
 auth       include      system-local-login
 account    include      system-local-login
-session    optional     /usr/local/lib/security/pam_luks_keyring_unlock.so #<-
+session    optional     pam_luks_keyring_unlock.so #<-
 session    optional     pam_gnome_keyring.so auto_start #<-
 session    include      system-local-login
 ```
 
 Make sure you have enabled `rd.luks.options=password-cache=yes` in the kernel parameters to allow `sd-encrypt` writing the password into the keyring.
+
+If you built the module manually and installed it to `/usr/local/lib/security/pam_luks_keyring_unlock.so` (default), the full path needs to be used in the config.
 
 ## Contributing
 
