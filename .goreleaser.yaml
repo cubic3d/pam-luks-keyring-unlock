@@ -56,5 +56,5 @@ aur_sources:
       # Binary
       meson install -C build --destdir "$pkgdir"
       # License
-      install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+      install -Dm644 "$pkgname-$pkgver/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
     disable: "{{ .IsDraft }}"
