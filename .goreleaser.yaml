@@ -1,0 +1,60 @@
+# Future
+version: 2
+
+builds:
+  - skip: true
+
+source:
+  enabled: true
+  prefix_template: "{{ .ProjectName }}-{{ .Version }}/"
+
+checksum: {}
+
+release:
+  prerelease: auto
+
+changelog:
+  use: github
+  format: '[`{{ .SHA | printf "%.7s" }}`]({{ .GitURL }}/commit/{{ .SHA }}) {{ .Message }} ({{ with .AuthorUsername }}@{{ . }}{{ else }}{{ .AuthorName }} <{{ .AuthorEmail }}>{{ end }})'
+  sort: asc
+  filters:
+    include:
+      - ^feat
+      - ^fix
+      - ^perf
+      - ^refactor
+      - ^revert
+
+signs:
+  - artifacts: all
+    signature: "${artifact}.asc"
+    args:
+      - --output
+      - ${signature}
+      - --armor
+      - --detach-sign
+      - ${artifact}
+
+aur_sources:
+  - homepage: https://github.com/cubic3d/pam-luks-keyring-unlock
+    description: A PAM module that seamlessly unlocks your Gnome Keyring and KDE Wallet using your LUKS encryption key.
+    maintainers:
+      - Waldemar Faist <cubic@coldice.net>
+    license: MIT
+    private_key: "{{ .Env.AUR_KEY }}"
+    git_url: "ssh://aur@aur.archlinux.org/pam-luks-keyring-unlock.git"
+    depends:
+      - pam
+      - keyutils
+    makedepends:
+      - meson
+      - ninja
+    build: |-
+      arch-meson "$pkgname-$pkgver" build
+      meson compile -C build
+    package: |-
+      # Binary
+      meson install -C build --destdir "$pkgdir"
+      # License
+      install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+    disable: "{{ .IsDraft }}"
