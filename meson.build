@@ -1,5 +1,4 @@
 project('pam-luks-keyring-unlock', 'c',
-  version: '1.0.0',
   license: 'MIT',
   default_options: [
     'warning_level=3',
